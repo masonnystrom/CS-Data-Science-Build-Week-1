@@ -1,14 +1,49 @@
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score
+# algorithm
+import numpy as np
+import pandas as pd
+from scipy.spatial import distance
 
-# instantiate learning model (k = 3)
-knn = KNeighborsClassifier(n_neighbors=3)
+class KNearestNeighbor():
+    """Unsupervise NN algorithm"""
 
-# fitting the model
-knn.fit(X_train, y_train)
+    def fit(self, X):
+        self.X = X
+        self.features = self.X.drop(self.X.columns[0], axis=1)
+        self.preds_labels = []
+        self.distances = []
 
-# predict the response
-pred = knn.predict(X_test)
+    def prediction(self, y_train, k=3, metric = "euclidian"):
+        """predicts nearest neighbor for user-supplied input
+         k represents the amount of neighbors to compare data with. 
+         That is why it usually k is an odd number.
+        the bigger the k, the less 'defined' or more smooth
+         are the areas of classification.
+        """
+        assert k <= len(X), "[!] k can't be larger than number of samples."
 
-# evaluate accuracy
-print("accuracy: {}".format(accuracy_score(y_test, pred)))
+        # assert len(y_train) == len(self.X.columns) - 1
+
+        if metric == "jaccard":
+            for i in range(len(self.X)):
+                self.distances.append(distance.jaccard(y_train, 
+                                                        self.features.iloc[i]))
+                self.preds_labels.append(self.X[self.X.columns[0]].iloc[i])
+
+            self.distance_df = pd.DataFrame([self.preds_labels, self.distances], 
+                                            index=["pred_labels","distances"]).T
+            return self.distance_df.sort_values("distances")[:k]
+
+        else:
+
+            for i in range(len(self.X)):
+                self.distances.append(distance.euclidean(y_train, 
+                                                        self.features.iloc[i]))
+                self.preds_labels.append(self.X[self.X.columns[0]].iloc[i])
+
+            self.distance_df = pd.DataFrame([self.preds_labels, self.distances], 
+                                            index=["preds_labels","distances"]).T
+            return self.distance_df.sort_values("distances")[:k]
+
+
+if __name__ == "__main__":
+    pass
