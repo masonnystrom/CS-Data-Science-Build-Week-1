@@ -1,40 +1,44 @@
 # algorithm 
 import numpy
-import scipy
+from scipy.spatial import distance
 
-class Node():
-""" Helper class that will """
-    pass
+class KNearestNeighbor():
+    """Unsupervise NN algorithm"""
 
-
-class DecisionTree():
-    """ Decision Tree class that for fitting and predicting
-
-    Inputs: X train, y train and a max_depth
-    Outputs: Decision tree fit and prediction. 
-    """
-    def __ini__(self, X, y, max_depth = 5):
+    def fit(self, X):
         self.X = X
-        self.y = y
-        self.depth = 0
-        self.max_depth = max_depth
+        self.features = self.X.drop(self.X.columns[0], axis=1)
+        self.preds_labels = []
+        self.distances = []
 
-    def split_data(data, column, value):
-        split_column_values = data[:, column]
-        train = data[split_column_values <= value]
-        test = data[split_column_values >= value]
-    
-    def best_split():
-        # can use cross entropy or gini index
-        # can use recurssion
-        pass
+    def prediction(self, y_train, k=3, metric = "euclidian"):
+        """predicts nearest neighbor for user-supplied input
+         k represents the amount of neighbors to compare data with. 
+         That is why it usually k is an odd number.
+        the bigger the k, the less 'defined' or more smooth
+         are the areas of classification.
+        """
+    assert len(y_train) == len(self.X.columns) - 1
+    #assert k <= len(X), "[!] k can't be larger than number of samples."
 
-    def fit():
-        pass
+    if metric == "jaccard":
+        for i in range(len(self.X)):
+            self.distances.append(distance.jaccard(y, self.features.iloc[i]))
+            self.ids.append(self.X[self.X.columns[0]].iloc[i])
 
+    self.distances_df = pd.DataFrame([self.id, self.distances],
+                                            index = ["preds_lables", "distances"]).T 
+    return self.distances_df.sort_values("distances")[:k]
 
-    def predict():
-        pass
+    else:
+
+        for i in range(len(self.X)):
+            self.distances.append(distance.euclidean(y, self.features.iloc[i]))
+            self.ids.append(self.X[self.X.columns[0]].iloc[i])
+
+    self.distances_df = pd.DataFrame([self.ids, self.distances], 
+                                            index = ["preds_labels", "distances"]).T 
+    return self.distances_df.sort_values("distances")[:k]
 
 
 if __name__ == "__main__":
